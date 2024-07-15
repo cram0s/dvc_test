@@ -1,0 +1,85 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python3 src/data/prepare.py -path_train=data/raw/titanic.csv
+    deps:
+    - path: data/raw/titanic.csv
+      hash: md5
+      md5: 61fdd54abdbf6a85b778e937122e1194
+      size: 60302
+    - path: src/data/prepare.py
+      hash: md5
+      md5: 9739eba9cd6d7845b237f1d3188dbdb1
+      size: 2847
+    outs:
+    - path: data/processed/x_test.csv
+      hash: md5
+      md5: 3c98bff0746afbd4c1860d70b4155660
+      size: 16101
+    - path: data/processed/x_train.csv
+      hash: md5
+      md5: 355fdaaab09e23ccd736fc1f9e314f5f
+      size: 47918
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: c4190fd382dd261fa736bc8786c99955
+      size: 679
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 691df35c62b83ef0c3254ca05fdee7f5
+      size: 2014
+  train:
+    cmd: python3 src/models/train.py -x_train=data/processed/x_train.csv -y_train=data/processed/y_train.csv
+      -path_pkl=models/model.pkl
+    deps:
+    - path: data/processed/x_train.csv
+      hash: md5
+      md5: 355fdaaab09e23ccd736fc1f9e314f5f
+      size: 47918
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 691df35c62b83ef0c3254ca05fdee7f5
+      size: 2014
+    - path: src/models/train.py
+      hash: md5
+      md5: 96dd8a7277722108df6dfd2d6d7ab8b5
+      size: 1907
+    params:
+      params.yaml:
+        train_logistic.penalty: l2
+        train_logistic.random_state: 42
+        train_logistic.solver: lbfgs
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: 60a42fe290bd9d574b4355d15771a11a
+      size: 990
+  evaluate:
+    cmd: python3 src/models/evaluate.py -x_test=data/processed/x_test.csv -y_test=data/processed/y_test.csv
+      -path_pkl=models/model.pkl -scores=reports/scores.json -plot=reports/plot.json
+    deps:
+    - path: data/processed/x_test.csv
+      hash: md5
+      md5: 3c98bff0746afbd4c1860d70b4155660
+      size: 16101
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: c4190fd382dd261fa736bc8786c99955
+      size: 679
+    - path: models/model.pkl
+      hash: md5
+      md5: 60a42fe290bd9d574b4355d15771a11a
+      size: 990
+    - path: src/models/evaluate.py
+      hash: md5
+      md5: 8f628b58730633a1fe18788223fa40e8
+      size: 2611
+    outs:
+    - path: reports/plot.json
+      hash: md5
+      md5: 7364839af77dbaa8f8a9f58c719ac845
+      size: 5873
+    - path: reports/scores.json
+      hash: md5
+      md5: 899091fa118503d989ca3d693296e6a4
+      size: 84

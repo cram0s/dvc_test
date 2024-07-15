@@ -1,0 +1,47 @@
+stages:
+  prepare:
+    cmd: python3 src/data/prepare.py -path_train=data/raw/titanic.csv
+    deps:
+    - data/raw/titanic.csv
+    - src/data/prepare.py
+    outs:
+    - data/processed/x_test.csv
+    - data/processed/x_train.csv
+    - data/processed/y_test.csv
+    - data/processed/y_train.csv
+  train:
+    cmd: python3 src/models/train.py -x_train=data/processed/x_train.csv -y_train=data/processed/y_train.csv
+      -path_pkl=models/model.pkl
+    deps:
+    - data/processed/x_train.csv
+    - data/processed/y_train.csv
+    - src/models/train.py
+    params:
+    - train_logistic.random_state
+    - train_logistic.solver
+    - train_logistic.penalty
+    outs:
+    - models/model.pkl
+  evaluate:
+    cmd: python3 src/models/evaluate.py -x_test=data/processed/x_test.csv -y_test=data/processed/y_test.csv
+      -path_pkl=models/model.pkl -scores=reports/scores.json -plot=reports/plot.json
+    deps:
+    - data/processed/x_test.csv
+    - data/processed/y_test.csv
+    - models/model.pkl
+    - src/models/evaluate.py
+    metrics:
+    - reports/scores.json:
+        cache: false
+    plots:
+    - reports/plot.json:
+        cache: false
+        x: False_Positive_Rate
+        y: True_Positive_Rate
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step
