@@ -42,8 +42,8 @@ stages:
       size: 2014
     - path: src/models/train.py
       hash: md5
-      md5: 96dd8a7277722108df6dfd2d6d7ab8b5
-      size: 1907
+      md5: d6531c556793c00548d1bf572b5c9df2
+      size: 1970
     params:
       params.yaml:
         train_logistic.penalty: l2
